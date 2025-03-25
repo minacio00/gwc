@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"slices"
+	"strings"
 )
 
 func lineCounter(r io.Reader) int {
@@ -30,27 +30,14 @@ func lineCounter(r io.Reader) int {
 
 func wordCounter(r io.Reader) int {
 	count := 0
-	separator := []byte{' ', '.', ',', '!', '?', ';', ':', '\n'}
 	reader := bufio.NewReader(r)
-	inWord := false
-
 	for {
 		line, _, err := reader.ReadLine()
 		if err != nil {
 			break
 		}
-		if len(line) > 0 {
-			for i, char := range line {
-				lineEnd := i == len(line)-1
-				flag := slices.Contains(separator, char)
-				if (flag && inWord) || lineEnd {
-					count++
-					inWord = false
-				} else {
-					inWord = true
-				}
-			}
-		}
+		lineArr := strings.Fields(string(line))
+		count += len(lineArr)
 	}
 	return count
 }
